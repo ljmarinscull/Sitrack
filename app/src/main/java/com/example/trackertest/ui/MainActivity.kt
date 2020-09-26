@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
             val binder = service as LocationService.RunServiceBinder
             mService = binder.getService()
             mBound = true
-            mService?.foreground()
             mService?.requestLocationUpdates()
         }
 
@@ -102,8 +101,6 @@ class MainActivity : AppCompatActivity() {
                 IntentFilter(LocationService.ACTION_BROADCAST)
             )
         }
-
-        mService?.background()
     }
 
     override fun onPause() {
@@ -115,12 +112,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
          if (mBound) {
-            if (mService!!.isServiceRunning()) {
-                mService!!.foreground()
-            } else {
-                stopService(Intent(this, LocationService::class.java))
-            }
-
             unbindService(mServiceConnection)
             mBound = false
         }

@@ -13,6 +13,7 @@ import com.example.trackertest.R
 import com.example.trackertest.ui.MainActivity
 import com.google.android.gms.location.*
 
+
 class LocationService: Service() {
 
     private val TAG: String = LocationService::class.java.simpleName
@@ -25,10 +26,13 @@ class LocationService: Service() {
     private var mLocationCallback: LocationCallback? = null
     private var mLocationRequest: LocationRequest? = null
     private var mLocation: Location? = null
+    private val mNotificationManager: NotificationManager? = null
 
     companion object{
         const val PACKAGE_NAME =
             "com.example.trackertest.ui.locationservice"
+
+        const val CHANNEL_ID = "channel_01"
 
         const  val ACTION_BROADCAST = "$PACKAGE_NAME.broadcast"
 
@@ -48,7 +52,7 @@ class LocationService: Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.v("Timer Service", "onCreate")
+        Log.v("LocationServices", "onCreate")
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         mLocationCallback = object : LocationCallback() {
@@ -62,9 +66,27 @@ class LocationService: Service() {
         val handlerThread = HandlerThread(TAG)
         handlerThread.start()
         mServiceHandler = Handler(handlerThread.looper)
+
+        // Android O requires a Notification Channel.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.app_name)
+            // Create the channel for the notification
+            val mChannel =  NotificationChannel(
+                CHANNEL_ID,
+                name,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+
+            // Set the Notification Channel for the Notification Manager.
+            mNotificationManager?.createNotificationChannel(mChannel);
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) : Int {
+        super.onStartCommand(intent, flags, startId)
+
+        startForeground(NOTIFICATION_ID, createNotification())
+
         return START_STICKY
     }
 
@@ -162,8 +184,10 @@ class LocationService: Service() {
 
         val resultIntent = Intent(this, MainActivity::class.java)
         val resultPendingIntent =
-            PendingIntent.getActivity(this, 0, resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(
+                this, 0, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
         builder.setContentIntent(resultPendingIntent)
 
         return builder.build()
