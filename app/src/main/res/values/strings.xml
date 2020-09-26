@@ -1,3 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <string name="app_name">TrackerTest</string>
+    <string name="ok">Ok</string>
+    <string name="title_activity_main1">MainActivity</string>
+    <string name="title_realtime">RealTime</string>
+    <string name="title_records">Records</string>
 </resources>
