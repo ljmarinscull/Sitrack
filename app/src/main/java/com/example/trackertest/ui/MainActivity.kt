@@ -6,7 +6,6 @@ import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -18,7 +17,6 @@ import com.example.trackertest.R
 import com.example.trackertest.data.database.AppDatabase
 import com.example.trackertest.data.repository.RecordRepoImpl
 import com.example.trackertest.ui.service.LocationService
-import com.example.trackertest.utils.getLocationText
 import com.example.trackertest.utils.isNotGPSActivated
 import com.example.trackertest.utils.startActivityIntent
 import com.example.trackertest.utils.toast
@@ -50,6 +48,8 @@ class MainActivity : AppCompatActivity() {
             val binder = service as LocationService.RunServiceBinder
             mService = binder.getService()
             mBound = true
+            mService?.foreground()
+            mService?.requestLocationUpdates()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -102,6 +102,8 @@ class MainActivity : AppCompatActivity() {
                 IntentFilter(LocationService.ACTION_BROADCAST)
             )
         }
+
+        mService?.background()
     }
 
     override fun onPause() {
@@ -112,11 +114,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
-        if (mBound) {
+         if (mBound) {
+            if (mService!!.isServiceRunning()) {
+                mService!!.foreground()
+            } else {
+                stopService(Intent(this, LocationService::class.java))
+            }
+
             unbindService(mServiceConnection)
             mBound = false
         }
-
         super.onStop()
     }
 
@@ -126,11 +133,6 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent) {
             val location: Location =
                 intent.getParcelableExtra(LocationService.EXTRA_LOCATION)!!
-            Toast.makeText(
-                context, context?.getLocationText(location),
-                Toast.LENGTH_LONG
-            ).show()
-
             mainViewModel?.createRecord(location)
         }
     }
@@ -157,9 +159,5 @@ class MainActivity : AppCompatActivity() {
                     token?.continuePermissionRequest()
                 }
             }).check()
-    }
-
-    fun requestLocationUpdates(){
-         mService?.requestLocationUpdates()
     }
 }

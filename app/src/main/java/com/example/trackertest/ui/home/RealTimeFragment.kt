@@ -37,10 +37,6 @@ class RealTimeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.button.setOnClickListener{
-            (activity as MainActivity).requestLocationUpdates()
-        }
-
         mainViewModel.record.observe(viewLifecycleOwner, Observer {
             binding.tvDate.text =  it.createdAt
             binding.tvLatLong.text =  "${it.latitude} / ${it.longitude}"

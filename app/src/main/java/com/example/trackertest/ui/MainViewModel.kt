@@ -14,14 +14,9 @@ import kotlin.collections.ArrayList
 
 class MainViewModel(private val repo: IRecordRepo) : ViewModel() {
 
-    private val _locationRT = MutableLiveData<Location>()
-    private val locationRT : LiveData<Location>
-        get() = _locationRT
-
     private val _recordList = MutableLiveData(emptyList<Record>())
     val recordList : LiveData<List<Record>>
         get() = _recordList
-
 
     private val _record = MutableLiveData(Record())
     val record : LiveData<Record>
@@ -39,12 +34,8 @@ class MainViewModel(private val repo: IRecordRepo) : ViewModel() {
     val lastSpeedAvg : LiveData<Double>
         get() = _lastSpeedAvg
 
-    private val _dateTest = MutableLiveData<String>("No Date")
-    val dateTest : LiveData<String>
-        get() = _dateTest
 
     fun createRecord(location: Location){
-        _locationRT.value = location
         val record =  Record(0,location.speed,location.accuracy,"",location.latitude,location.longitude)
         viewModelScope.launch(Dispatchers.Main) {
             try {
@@ -70,32 +61,4 @@ class MainViewModel(private val repo: IRecordRepo) : ViewModel() {
             _lastSpeedAvg.value = arrayList.map { it -> it.speed!!}.average()
         }
     }
-
-    fun lastLatAndLong(): String{
-        return "${record.value?.latitude} / ${record.value?.latitude}"
-    }
-
-    fun lastAcc() =  "${record.value?.accuracy}"
-
-    fun lastSpeed() =  "${record.value?.speed}"
-
-    fun date() : String {
-        val format: SimpleDateFormat
-        val dateStr = record.value?.createdAt!!
-        Log.i("date()", dateStr)
-        return if(dateStr.isNotEmpty()) {
-           /* format = SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH)
-            format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-            format.format(dateStr)*/
-            dateStr
-        } else{
-            "No Record"
-        }
-    }
-
-    fun lastSpeedMin() = "${lastSpeedMin.value}"
-    fun lastSpeedMax() = "${lastSpeedMax.value}"
-    fun lastSpeedAvg() = "${lastSpeedAvg.value}"
-
-
 }

@@ -23,10 +23,6 @@ class RecordAdapter(val context: Context, private var recordList: List<Record>) 
         return recordList.size
     }
 
-    fun setRecordList(recordList: List<Record>){
-         this.recordList = recordList
-    }
-
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         when (holder) {
             is MainAdapterViewHolder -> holder.bind(recordList[position], position)
@@ -38,7 +34,6 @@ class RecordAdapter(val context: Context, private var recordList: List<Record>) 
             try {
                 var format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
                 val date = format.parse(item.createdAt)
-             //   format = SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH)
                 format = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
                 itemView.tvDate.text = format.format(date)
 

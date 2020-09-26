@@ -17,8 +17,8 @@ class LocationService: Service() {
 
     private val TAG: String = LocationService::class.java.simpleName
 
+    private var isServiceRunning : Boolean = false
     private var mServiceHandler: Handler? = null
-    private var mNotificationManager: NotificationManager? = null
 
     private val serviceBinder: IBinder = RunServiceBinder()
     private var mFusedLocationClient: FusedLocationProviderClient? = null
@@ -38,7 +38,7 @@ class LocationService: Service() {
 
         const val EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME + ".started_from_notification"
 
-        const val UPDATE_INTERVAL_IN_MILLISECONDS: Long = 3000 //30000
+        const val UPDATE_INTERVAL_IN_MILLISECONDS: Long = 30000
 
         /**
          * The fastest rate for active location updates. Updates will never be more frequent
@@ -72,19 +72,6 @@ class LocationService: Service() {
         val handlerThread = HandlerThread(TAG)
         handlerThread.start()
         mServiceHandler = Handler(handlerThread.looper)
-        mNotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        // Android O requires a Notification Channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name: CharSequence = getString(R.string.app_name)
-            // Create the channel for the notification
-            val mChannel =
-                NotificationChannel(LocationService.CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT)
-
-            // Set the Notification Channel for the Notification Manager.
-            mNotificationManager!!.createNotificationChannel(mChannel)
-        }
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) : Int {
@@ -94,11 +81,11 @@ class LocationService: Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.e("Service finish", "Finish")
+        isServiceRunning = false
     }
 
-
     fun foreground() {
-        startForeground(NOTIFICATION_ID, getNotification())
+        startForeground(NOTIFICATION_ID, createNotification())
     }
 
     fun background() {
@@ -110,18 +97,6 @@ class LocationService: Service() {
             return this@LocationService
         }
     }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel(channelId: String, channelName: String) : String {
-        val chan = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_NONE)
-        chan.lightColor = getColor(android.R.color.darker_gray)
-        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-
-        val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        service.createNotificationChannel(chan)
-        return channelId
-    }
-
 
     private fun createLocationRequest() {
         mLocationRequest = LocationRequest()
@@ -154,63 +129,10 @@ class LocationService: Service() {
         val intent = Intent(ACTION_BROADCAST)
         intent.putExtra(EXTRA_LOCATION, location)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
-
-        // Update notification content if running as a foreground service.
-        if (serviceIsRunningInForeground(this)) {
-            mNotificationManager!!.notify(NOTIFICATION_ID, getNotification())
-        }
     }
 
-    private fun getNotification(): Notification? {
-        val intent = Intent(this, LocationService::class.java)
-        val text: CharSequence = "Hola"//mLocation)
-
-        // Extra to help us figure out if we arrived in onStartCommand via the notification or not.
-        intent.putExtra(LocationService.EXTRA_STARTED_FROM_NOTIFICATION, true)
-
-        // The PendingIntent that leads to a call to onStartCommand() in this service.
-        val servicePendingIntent = PendingIntent.getService(
-            this, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        // The PendingIntent to launch activity.
-        val activityPendingIntent = PendingIntent.getActivity(
-            this, 0,
-            Intent(this, MainActivity::class.java), 0
-        )
-        val builder = NotificationCompat.Builder(this)
-            .addAction(
-                R.drawable.ic_location, getString(R.string.ok),
-                activityPendingIntent
-            )
-            .setContentText(text)
-            .setContentTitle("Tracker test")
-            .setOngoing(true)
-            .setPriority(Notification.PRIORITY_HIGH)
-            .setSmallIcon(R.drawable.ic_location)
-            .setTicker(text)
-            .setWhen(System.currentTimeMillis())
-
-        // Set the Channel ID for Android O.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder.setChannelId(LocationService.CHANNEL_ID) // Channel ID
-        }
-        return builder.build()
-    }
-
-    private fun serviceIsRunningInForeground(context: Context): Boolean {
-        val manager = context.getSystemService(
-            Context.ACTIVITY_SERVICE
-        ) as ActivityManager
-        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            if (javaClass.name == service.service.className) {
-                if (service.foreground) {
-                    return true
-                }
-            }
-        }
-        return false
+    fun isServiceRunning() : Boolean {
+        return isServiceRunning
     }
 
     fun requestLocationUpdates() {
@@ -224,6 +146,38 @@ class LocationService: Service() {
         } catch (unlikely: SecurityException) {
             Log.e(TAG, "Lost location permission. Could not request updates. $unlikely")
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(channelId: String, channelName: String) : String {
+        val chan = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_NONE)
+        chan.lightColor = getColor(android.R.color.darker_gray)
+        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+
+        val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        service.createNotificationChannel(chan)
+        return channelId
+    }
+
+    private fun createNotification() : Notification {
+        val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel("my_service", "My Background Service")
+        } else {
+            ""
+        }
+
+        val builder = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Tracker Test")
+            .setContentText("Regrese a la app")
+            .setSmallIcon(R.mipmap.ic_launcher)
+
+        val resultIntent = Intent(this, MainActivity::class.java)
+        val resultPendingIntent =
+            PendingIntent.getActivity(this, 0, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
+        builder.setContentIntent(resultPendingIntent)
+
+        return builder.build()
     }
 
     inner class LocalBinder : Binder() {
