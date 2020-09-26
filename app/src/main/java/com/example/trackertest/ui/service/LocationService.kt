@@ -30,21 +30,11 @@ class LocationService: Service() {
         const val PACKAGE_NAME =
             "com.example.trackertest.ui.locationservice"
 
-        const val CHANNEL_ID = "channel_01"
-
         const  val ACTION_BROADCAST = "$PACKAGE_NAME.broadcast"
 
         const val EXTRA_LOCATION = "$PACKAGE_NAME.location"
 
-        const val EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME + ".started_from_notification"
-
         const val UPDATE_INTERVAL_IN_MILLISECONDS: Long = 30000
-
-        /**
-         * The fastest rate for active location updates. Updates will never be more frequent
-         * than this value.
-         */
-        const val FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2
 
         /**
          * The identifier for the notification displayed for the foreground service.
@@ -100,9 +90,8 @@ class LocationService: Service() {
 
     private fun createLocationRequest() {
         mLocationRequest = LocationRequest()
-        mLocationRequest!!.interval = LocationService.UPDATE_INTERVAL_IN_MILLISECONDS
-        mLocationRequest!!.fastestInterval =
-            LocationService.FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS
+        mLocationRequest!!.interval = UPDATE_INTERVAL_IN_MILLISECONDS
+        mLocationRequest!!.fastestInterval = UPDATE_INTERVAL_IN_MILLISECONDS
         mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
@@ -178,11 +167,6 @@ class LocationService: Service() {
         builder.setContentIntent(resultPendingIntent)
 
         return builder.build()
-    }
-
-    inner class LocalBinder : Binder() {
-        val service: LocationService
-            get() = this@LocationService
     }
 
 }

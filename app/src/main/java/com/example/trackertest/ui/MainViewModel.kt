@@ -54,8 +54,8 @@ class MainViewModel(private val repo: IRecordRepo) : ViewModel() {
     private fun updateVariables(){
         if(_recordList.value != null && _recordList.value!!.isNotEmpty()){
              val arrayList = ArrayList(_recordList.value!!)
-
-            _record.value = arrayList.last()
+             Log.e("updateVariables >> ", arrayList.last().toString())
+            _record.value = arrayList[0]
             _lastSpeedMin.value = arrayList.minByOrNull { it.speed!! }?.speed!!
             _lastSpeedMax.value = arrayList.maxByOrNull { it.speed!! }?.speed!!
             _lastSpeedAvg.value = arrayList.map { it -> it.speed!!}.average()
