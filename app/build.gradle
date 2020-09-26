@@ -18,6 +18,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            resValue("string","DB_PASSWORD_TRACKER_DATABASE","")
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -73,6 +76,8 @@ dependencies {
 
     //Permissions
     implementation 'com.karumi:dexter:6.0.1'
+
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

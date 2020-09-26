@@ -15,9 +15,18 @@ interface RecordDAO {
     @Query("SELECT * FROM $RECORD_TABLE_NAME ORDER BY _id DESC LIMIT :limit")
     suspend fun getRecords(limit: Int = 100): List<Record>
 
+    @Query("DELETE FROM $RECORD_TABLE_NAME WHERE _id NOT IN (:ids)")
+    suspend fun getDeleteOldRecords(ids: List<Int> )
+
     @Transaction
     suspend fun insertEntityAndGetLast100(speed: Float, accuracy: Float, latitude: Double, longitude: Double) : List<Record> {
-        insertEntity(speed,accuracy, latitude, longitude)
-        return getRecords()
+        insertEntity(speed, accuracy, latitude, longitude)
+        val result = getRecords()
+
+        val ids = result.map{
+            it -> it.id
+        }
+        getDeleteOldRecords(ids)
+        return result
     }
 }

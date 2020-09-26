@@ -38,7 +38,7 @@ class RealTimeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         mainViewModel.record.observe(viewLifecycleOwner, Observer {
-            binding.tvDate.text =  it.createdAt
+            binding.tvDate.text = if(it.createdAt.isEmpty()) "None record received" else it.createdAt
             binding.tvLatLong.text =  "${it.latitude} / ${it.longitude}"
             binding.tvSpeed.text =  "${it.speed}"
             binding.tvAcc.text =  "${it.accuracy}"
