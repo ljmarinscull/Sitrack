@@ -96,14 +96,6 @@ class LocationService: Service() {
         isServiceRunning = false
     }
 
-    fun foreground() {
-        startForeground(NOTIFICATION_ID, createNotification())
-    }
-
-    fun background() {
-        stopForeground(true)
-    }
-
     inner class RunServiceBinder : Binder() {
         fun getService() : LocationService {
             return this@LocationService
@@ -140,10 +132,6 @@ class LocationService: Service() {
         val intent = Intent(ACTION_BROADCAST)
         intent.putExtra(EXTRA_LOCATION, location)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
-    }
-
-    fun isServiceRunning() : Boolean {
-        return isServiceRunning
     }
 
     fun requestLocationUpdates() {
