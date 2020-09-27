@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:paddingTop="8dp"
@@ -14,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:text="2 June 2020"
-        android:paddingLeft="8dp"/>
+        tools:text="2 June 2020"
+        android:gravity="center" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,7 +33,7 @@
             android:gravity="center"
             android:layout_weight="3"
             android:textStyle="bold"
-            android:text="Latitude/Longitude" />
+            android:text="Latitude / Longitude" />
 
         <LinearLayout
             android:id="@+id/container"
@@ -42,26 +41,24 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:paddingEnd="16dp"
-            android:gravity="end"
+            android:gravity="center"
             android:layout_weight="2">
             <TextView
                 android:id="@+id/tvLat"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:paddingStart="8dp"
-                android:layout_weight="3"
+                android:layout_marginEnd="8dp"
                 android:gravity="center"
-                android:text="0.000000"/>
+                tools:text="0.000000"/>
             <TextView
                 android:id="@+id/tvLong"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:paddingStart="8dp"
-                android:layout_weight="3"
+                android:layout_marginStart="8dp"
                 android:gravity="center"
-                android:text="0.000000" />
+                tools:text="0.000000" />
         </LinearLayout>
     </LinearLayout>
 
@@ -82,7 +79,7 @@
             android:gravity="center"
             android:layout_weight="3"
             android:textStyle="bold"
-            android:text="Speed/Accuracy" />
+            android:text="Speed / Accuracy" />
 
         <LinearLayout
             android:id="@+id/container1"
@@ -90,26 +87,26 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:paddingEnd="16dp"
-            android:gravity="end"
+            android:gravity="center"
             android:layout_weight="2">
+
             <TextView
                 android:id="@+id/tvSpeed"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:paddingStart="8dp"
-                android:layout_weight="3"
+                android:layout_marginEnd="8dp"
                 android:gravity="center"
-                android:text="0.000000"/>
+                tools:text="0.000000"/>
+
             <TextView
                 android:id="@+id/tvAcc"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:paddingStart="8dp"
-                android:layout_weight="3"
+                android:layout_marginStart="8dp"
                 android:gravity="center"
-                android:text="0.000000" />
+                tools:text="0.000000" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

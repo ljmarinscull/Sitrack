@@ -16,7 +16,7 @@ interface RecordDAO {
     suspend fun getRecords(limit: Int = 100): List<Record>
 
     @Query("DELETE FROM $RECORD_TABLE_NAME WHERE _id NOT IN (:ids)")
-    suspend fun getDeleteOldRecords(ids: List<Int> )
+    suspend fun deleteOldRecords(ids: List<Int> )
 
     @Transaction
     suspend fun insertEntityAndGetLast100(speed: Float, accuracy: Float, latitude: Double, longitude: Double) : List<Record> {
@@ -26,7 +26,7 @@ interface RecordDAO {
         val ids = result.map{
             it -> it.id
         }
-        getDeleteOldRecords(ids)
+        deleteOldRecords(ids)
         return result
     }
 }

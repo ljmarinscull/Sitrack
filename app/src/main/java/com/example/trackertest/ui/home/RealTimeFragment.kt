@@ -12,6 +12,7 @@ import com.example.trackertest.R
 import com.example.trackertest.databinding.FragmentRealtimeBinding
 import com.example.trackertest.ui.MainActivity
 import com.example.trackertest.ui.MainViewModel
+import kotlinx.android.synthetic.main.record_row.view.*
 
 class RealTimeFragment : Fragment() {
 
@@ -39,22 +40,22 @@ class RealTimeFragment : Fragment() {
 
         mainViewModel.record.observe(viewLifecycleOwner, Observer {
             binding.tvDate.text = if(it.createdAt.isEmpty()) "None record received" else it.createdAt
-            binding.tvLatLong.text =  "${it.latitude} / ${it.longitude}"
+            binding.tvLatLong.text =  String.format("%.6f",it.latitude).plus(" / ").plus(String.format("%.6f",it.longitude))
             binding.tvSpeed.text =  "${it.speed}"
             binding.tvAcc.text =  "${it.accuracy}"
         })
 
         mainViewModel.lastSpeedMin.observe(viewLifecycleOwner, Observer {
-            binding.tvSpeedMin.text =  it.toString()
+            binding.tvSpeedMin.text =   String.format("%.6f",it)
         })
 
         mainViewModel.lastSpeedMax.observe(viewLifecycleOwner, Observer {
-            binding.tvSpeedMax.text =  it.toString()
+            binding.tvSpeedMax.text =  String.format("%.6f",it)
 
         })
 
         mainViewModel.lastSpeedAvg.observe(viewLifecycleOwner, Observer {
-           binding.tSpeedAvg.text = it.toString()
+           binding.tSpeedAvg.text =  String.format("%.6f",it)
         })
     }
 }

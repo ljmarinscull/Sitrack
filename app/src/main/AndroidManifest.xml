@@ -23,9 +23,4 @@
         <service
             android:name=".ui.service.LocationService" />
     </application>
-
-   <!-- android:foregroundServiceType="location"
-    android:enabled="true"
-    android:exported="false"-->
-
 </manifest>

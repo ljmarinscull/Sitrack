@@ -37,11 +37,11 @@ class RecordAdapter(val context: Context, private var recordList: List<Record>) 
                 format = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
                 itemView.tvDate.text = format.format(date)
 
-                itemView.tvLat.text = item.latitude.toString()
-                itemView.tvLong.text = item.longitude.toString()
+                itemView.tvLat.text = String.format("%.6f",item.latitude)
+                itemView.tvLong.text =  String.format("%.6f",item.longitude)
 
-                itemView.tvSpeed.text = item.speed.toString()
-                itemView.tvAcc.text = item.accuracy.toString()
+                itemView.tvSpeed.text = String.format("%.6f",item.speed)
+                itemView.tvAcc.text =  String.format("%.6f",item.accuracy)
 
             } catch (e: Exception) {
                 Log.e("SimpleDateFormat: error",e.toString())
